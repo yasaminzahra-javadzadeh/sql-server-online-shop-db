@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>پروتوتایپ سیستم فروشگاه</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 900px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-size: 28px;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        font-size: 16px;
+        color: #2c3e50;
+        margin-bottom: 5px;
+        display: block;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 2px solid #ddd;
+        box-sizing: border-box;
+        transition: all 0.3s;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #e74c3c;
+        outline: none;
+      }
+      .button {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        color: white;
+        background-color: #e74c3c;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .button:hover {
+        background-color: #c0392b;
+      }
+      .button:active {
+        background-color: #a93226;
+      }
+      hr {
+        border: 1px solid #ddd;
+        margin: 30px 0;
+      }
+      .form-container {
+        display: none;
+      }
+      #form_select {
+        margin-bottom: 20px;
+      }
+      .show-form-button {
+        padding: 12px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #3498db;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s;
+      }
+      .show-form-button:hover {
+        background-color: #2980b9;
+      }
+      .show-form-button:active {
+        background-color: #1c6c8c;
+      }
+      .modal {
+        position: fixed;
+        top: 60%;
+        left: 20%;
+        transform: translate(-20%, -20%);
+        z-index: 1500;
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        max-width: 500px;
+        width: 70%;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        overflow-y: auto;
+        max-height: 50vh;
+      }
+      .button-white {
+        background-color: white;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+        transition: all 0.3s;
+      }
+
+      .button-white:hover {
+        background-color: #ecf0f1;
+      }
+      .white-button {
+        background-color: white;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+      }
+
+      .white-button:hover {
+        background-color: #ecf0f1;
+      }
+
+      .white-button:active {
+        background-color: #dcdde1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>ورود اطلاعات سیستم فروشگاه</h2>
+
+      <button class="show-form-button" onclick="toggleForm()">
+        انتخاب فرم
+      </button>
+
+      <div id="form_section" style="display: none">
+        <div class="form-group">
+          <label for="form_select">فرم مورد نظر خود را انتخاب کنید:</label>
+          <select id="form_select" name="form_select" onchange="showForm()">
+            <option value="customer_form">فرم مشتری</option>
+            <option value="store_form">فرم فروشگاه</option>
+            <option value="product_form">فرم محصول</option>
+            <option value="order_form">فرم سفارش</option>
+          </select>
+        </div>
+
+        <div class="form-container" id="customer_form">
+          <h3>فرم مشتری</h3>
+          <form
+            method="POST"
+            action="server_endpoint"
+            onsubmit="appendAddressFields(this)"
+          >
+            <div class="form-group">
+              <label for="نام">نام</label>
+              <input type="text" id="نام" name="نام" required />
+            </div>
+            <div class="form-group">
+              <label for="کد_ملی">کد ملی</label>
+              <input type="text" id="کد_ملی" name="کد_ملی" required />
+            </div>
+            <div class="form-group">
+              <label for="شماره_تماس">شماره تماس</label>
+              <input type="text" id="شماره_تماس" name="شماره_تماس" required />
+            </div>
+            <div class="form-group">
+              <label>آدرس‌های ثبت‌شده</label>
+              <select
+                id="آدرس‌های_قبلی"
+                onchange="selectAddress()"
+                style="width: 100%; padding: 12px; font-size: 14px"
+              >
+                <option value="">انتخاب آدرس قبلی یا افزودن جدید</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <button type="button" class="button-white" onclick="openModal()">
+                + افزودن آدرس جدید
+              </button>
+              <input type="hidden" id="آدرس_کامل" name="آدرس_کامل" />
+              <ul id="customerAddressList"></ul>
+            </div>
+
+            <button class="button" type="submit">ثبت اطلاعات کاربر</button>
+          </form>
+        </div>
+
+        <div class="form-container" id="store_form">
+          <h3>فرم فروشگاه</h3>
+          <form method="POST" action="server_endpoint">
+            <div class="form-group">
+              <label for="نام_فروشگاه">نام فروشگاه</label>
+              <input type="text" id="نام_فروشگاه" name="نام_فروشگاه" required />
+            </div>
+            <div class="form-group">
+              <label for="نوع_فروش">نوع فروش</label>
+              <select id="نوع_فروش" name="نوع_فروش" required>
+                <option value="online">آنلاین</option>
+                <option value="offline">حضوری</option>
+                <option value="online_offline">آنلاین_حضوری</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="شماره_تماس_فروشگاه">شماره تماس فروشگاه</label>
+              <input
+                type="text"
+                id="شماره_تماس_فروشگاه"
+                name="شماره_تماس_فروشگاه"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <button
+                type="button"
+                class="button white-button"
+                onclick="openModal('store')"
+              >
+                افزودن آدرس
+              </button>
+              <input
+                type="hidden"
+                id="آدرس_کامل_فروشگاه"
+                name="آدرس_کامل_فروشگاه"
+              />
+            </div>
+            <button class="button" type="submit">ثبت اطلاعات فروشگاه</button>
+          </form>
+        </div>
+        <div
+          id="addressModal"
+          class="modal"
+          style="
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            right: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+          "
+        >
+          <div
+            style="
+              background: #fff;
+              margin: 10% auto;
+              padding: 20px;
+              width: 400px;
+              border-radius: 10px;
+              position: relative;
+            "
+          >
+            <span
+              onclick="closeModal()"
+              style="
+                position: absolute;
+                top: 10px;
+                left: 15px;
+                cursor: pointer;
+                font-size: 20px;
+              "
+              >&times;</span
+            >
+            <h4>افزودن آدرس</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="province">استان</label>
+                <select id="province" onchange="updateCities()">
+                  <option value="">انتخاب کنید</option>
+                  <option value="tehran">تهران</option>
+                  <option value="isfahan">اصفهان</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="city">شهر</label>
+                <select id="city">
+                  <option value="">ابتدا استان را انتخاب کنید</option>
+                </select>
+              </div>
+            </div>
+            <style>
+              .form-row {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 1rem;
+              }
+
+              .form-group {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+              }
+
+              .address-group {
+                flex: 4;
+              }
+
+              .code-group {
+                flex: 2;
+              }
+
+              .small-group {
+                flex: 1;
+              }
+
+              textarea,
+              input {
+                padding: 8px;
+                font-size: 14px;
+              }
+
+              .button {
+                padding: 10px 20px;
+                background-color: darkred;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+              }
+            </style>
+
+            <div class="form-row">
+              <div class="form-group address-group">
+                <label>آدرس</label>
+                <textarea id="ادرس" rows="3"></textarea>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group small-group">
+                <label>پلاک</label>
+                <input type="text" id="پلاک" />
+              </div>
+              <div class="form-group small-group">
+                <label>واحد</label>
+                <input type="text" id="واحد" />
+              </div>
+              <div class="form-group code-group">
+                <label>کد پستی</label>
+                <input type="text" id="کد_پستی" />
+              </div>
+            </div>
+
+            <button class="button" onclick="saveAddress()">ذخیره آدرس</button>
+          </div>
+        </div>
+
+        <div class="form-container" id="product_form">
+          <h3>فرم محصول</h3>
+          <form method="POST" action="server_endpoint">
+            <div class="form-group">
+              <label for="نام_محصول">نام محصول</label>
+              <input type="text" id="نام_محصول" name="نام_محصول" required />
+            </div>
+            <div class="form-group">
+              <label for="برند">برند</label>
+              <input type="text" id="برند" name="برند" required />
+            </div>
+            <div class="form-group">
+              <label for="قیمت">قیمت</label>
+              <input type="number" step="0.01" id="قیمت" name="قیمت" required />
+            </div>
+            <div class="form-group">
+              <label for="موجودی">موجودی</label>
+              <input type="number" id="موجودی" name="موجودی" required />
+            </div>
+
+            <button class="button" type="submit">ثبت اطلاعات محصول</button>
+          </form>
+        </div>
+
+        <div class="form-container" id="order_form">
+          <h3>فرم سفارش</h3>
+          <form method="POST" action="server_endpoint">
+            <div class="form-group">
+              <label for="شماره_پیگیری">شماره پیگیری</label>
+            </div>
+            <div class="form-group">
+              <label for="مبلغ_سفارش">مبلغ سفارش</label>
+            </div>
+            <div class="form-group">
+              <label for="انتخاب ادرس">انتخاب ادرس </label>
+              <input
+                type="number"
+                step="0.01"
+                id="انتخاب ادرس"
+                name="انتخاب ادرس"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="روش ارسال">روش ارسال </label>
+              <select id="روش ارسال" name="روش ارسال" required>
+                <option value="online">تحویل حضوری</option>
+                <option value="offline">پیک</option>
+                <option value="online_offline">پست</option>
+              </select>
+            </div>
+
+            <button class="button" type="submit">ثبت سفارش</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentFormTarget = null;
+      let customerAddresses = [];
+      let storeAddress = "";
+
+      function toggleForm() {
+        const formSection = document.getElementById("form_section");
+        formSection.style.display =
+          formSection.style.display === "none" ? "block" : "none";
+      }
+
+      function showForm() {
+        const formSelect = document.getElementById("form_select");
+        const formContainers = document.querySelectorAll(".form-container");
+        formContainers.forEach((form) => (form.style.display = "none"));
+        const selectedForm = document.getElementById(formSelect.value);
+        if (selectedForm) selectedForm.style.display = "block";
+      }
+
+      function openModal(target) {
+        currentFormTarget = target;
+        document.getElementById("addressModal").style.display = "block";
+      }
+
+      function closeModal() {
+        document.getElementById("addressModal").style.display = "none";
+      }
+
+      function saveAddress() {
+        const استان = document.getElementById("province").value;
+        const شهر = document.getElementById("city").value;
+        const ادرس = document.getElementById("ادرس").value;
+        const پلاک = document.getElementById("پلاک").value;
+        const واحد = document.getElementById("واحد").value;
+        const کدپستی = document.getElementById("کد_پستی").value;
+
+        const fullAddress = `استان: ${استان}، شهر: ${شهر}، آدرس: ${ادرس}، پلاک: ${پلاک}، واحد: ${واحد}، کد پستی: ${کدپستی}`;
+
+        if (currentFormTarget === "customer") {
+          customerAddresses.push(fullAddress);
+          updateCustomerAddressList();
+          document.getElementById("آدرس_کامل").value = fullAddress;
+        } else if (currentFormTarget === "store") {
+          storeAddress = fullAddress;
+          document.getElementById("آدرس_کامل_فروشگاه").value = storeAddress;
+          alert("آدرس فروشگاه ذخیره شد.");
+        }
+
+        closeModal();
+      }
+
+      function updateCustomerAddressList() {
+        const list = document.getElementById("customerAddressList");
+        list.innerHTML = "";
+        customerAddresses.forEach((addr) => {
+          const li = document.createElement("li");
+          li.textContent = addr;
+          list.appendChild(li);
+        });
+      }
+
+      function updateAddressDropdown() {
+        const dropdown = document.getElementById("آدرس‌های_قبلی");
+        dropdown.innerHTML =
+          '<option value="">انتخاب آدرس قبلی یا افزودن جدید</option>';
+
+        previousAddresses.forEach((address, index) => {
+          const option = document.createElement("option");
+          option.value = address;
+          option.textContent = address;
+          dropdown.appendChild(option);
+        });
+      }
+
+      function selectAddress() {
+        const selected = document.getElementById("آدرس‌های_قبلی").value;
+        document.getElementById("آدرس_کامل").value = selected;
+      }
+
+      function appendAddressFields(form) {
+        const hidden = document.getElementById("آدرس_کامل");
+        if (!hidden.value) {
+          alert("لطفاً ابتدا آدرس را وارد کنید.");
+          event.preventDefault();
+        }
+      }
+    </script>
+    <script>
+      const citiesByProvince = {
+        tehran: ["تهران", "ری", "شمیرانات", "اسلامشهر", "پردیس"],
+        isfahan: ["اصفهان", "کاشان", "خمینی‌شهر", "نجف‌آباد", "فلاورجان"],
+      };
+
+      function updateCities() {
+        const provinceSelect = document.getElementById("province");
+        const citySelect = document.getElementById("city");
+
+        const selectedProvince = provinceSelect.value;
+        const cities = citiesByProvince[selectedProvince] || [];
+
+        citySelect.innerHTML = "";
+
+        if (cities.length === 0) {
+          const option = document.createElement("option");
+          option.text = "ابتدا استان را انتخاب کنید";
+          citySelect.add(option);
+          return;
+        }
+
+        cities.forEach(function (city) {
+          const option = document.createElement("option");
+          option.text = city;
+          option.value = city;
+          citySelect.add(option);
+        });
+      }
+    </script>
+  </body>
+</html>
