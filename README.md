@@ -89,8 +89,12 @@ ecommerce-database-system/
 │   └── triggers.sql
 │
 ├── diagrams/
-    ├── erd-diagram.png
-    └── table.PNG
+│    ├── erd-diagram.png
+│    └── table.PNG
+│
+├── UI/
+    └── ecommerce-ui.html
+
 ```
 
 ---
